@@ -3,11 +3,11 @@
 A high-traffic, production-grade inventory management system for limited-edition sneaker drops. Features atomic reservations, real-time stock synchronization across multiple clients, and automatic stock recovery on reservation expiry.
 
 **Tech Stack:**
-- Frontend: React 19 + Vite + Tailwind CSS
-- Backend: Node.js + Express 5.2
-- Database: PostgreSQL 15+
-- ORM: Prisma 7.7
-- Real-time: Socket.io 4.8
+- Frontend: React + Vite + Tailwind CSS
+- Backend: Node.js + Express
+- Database: PostgreSQL
+- ORM: Prisma
+- Real-time: Socket.io
 - State Management: TanStack Query + React Context
 
 ---
@@ -15,8 +15,8 @@ A high-traffic, production-grade inventory management system for limited-edition
 ## 📋 Quick Start
 
 ### Prerequisites
-- Node.js 18+ and npm
-- PostgreSQL 15+ (local or cloud)
+- Node.js and npm
+- PostgreSQL (local or cloud)
 - Git
 
 ### Project Structure
@@ -31,7 +31,6 @@ high_inventory_system_nazmul/
 │   ├── prisma/
 │   │   ├── schema.prisma      # Data model
 │   │   └── migrations/        # DB migrations
-│   ├── .env.example           # Template for .env
 │   └── package.json
 ├── inventory_frontend/         # React + Vite frontend
 │   ├── src/
@@ -39,7 +38,6 @@ high_inventory_system_nazmul/
 │   │   ├── lib/               # API client, socket setup
 │   │   ├── hooks/             # Custom hooks (useSessionStorage)
 │   │   └── utils/             # Helpers (timezone, date formatting)
-│   ├── .env.example           # Template for .env
 │   └── package.json
 └── README.md                  # This file
 ```
@@ -52,7 +50,7 @@ high_inventory_system_nazmul/
 
 ```bash
 # Clone the repository
-git clone <your-github-repo-url>
+git clone https://github.com/nazmulbhuyian/high_inventory_system_nazmul.git
 cd high_inventory_system_nazmul
 
 # Install backend dependencies
@@ -65,23 +63,13 @@ npm install
 cd ..
 ```
 
-### 2. Environment Setup (Without Committing .env)
-
-**IMPORTANT: Never commit `.env` files to GitHub. Use `.env.example` as template.**
+### 2. Environment Setup
 
 #### Backend Environment
 Create `inventory_backend/.env`:
 ```
 DATABASE_URL="postgresql://user:password@localhost:5432/sneaker_drops_db"
-NODE_ENV="development"
 PORT=5000
-```
-
-**Generate from template:**
-```bash
-cd inventory_backend
-cp .env.example .env
-# Edit .env with your actual PostgreSQL credentials
 ```
 
 #### Frontend Environment
@@ -89,12 +77,6 @@ Create `inventory_frontend/.env`:
 ```
 VITE_API_BASE_URL="http://localhost:5000/api"
 VITE_SOCKET_URL="http://localhost:5000"
-```
-
-**Generate from template:**
-```bash
-cd inventory_frontend
-cp .env.example .env
 ```
 
 ### 3. Database Setup
@@ -454,145 +436,6 @@ model Purchase {
   @@index([drop_id, created_at])
 }
 ```
-
----
-
-## 🎬 Video Demo (2 Minutes)
-
-### What to Show (Two Browser Windows Side-by-Side)
-
-1. **Introduction (0:00-0:20)**
-   - Show two windows with same dashboard
-   - Explain Socket.io connection status
-
-2. **Create Drop (0:20-0:40)**
-   - Click "Create Drop" button
-   - Fill form: name, price, stock (e.g., 100), start time
-   - Submit and show new drop appears in both windows instantly
-
-3. **Atomic Reservation (0:40-1:00)**
-   - Reserve in Window 1
-   - Show stock decreases in both windows immediately
-   - Show "Reserved (60s)" countdown timer on button
-   - Show "Complete Purchase" button becomes enabled
-
-4. **Complete Purchase (1:00-1:20)**
-   - Click "Complete Purchase" before timer expires
-   - Show purchase success toast
-   - Show stock remains deducted in both windows
-
-5. **Auto Expiry (1:20-1:50)**
-   - Make another reservation in Window 1
-   - Wait for 60-second timer to expire (time-lapse)
-   - Show "Reserved" button auto-re-enables after expiry
-   - Show latest purchasers list on drop card
-
-6. **Conclusion (1:50-2:00)**
-   - Highlight real-time sync, atomic safety, expiry recovery
-   - Thank you
-
-**Recording Tips:**
-- Use Chrome DevTools to slow down network (Optional: simulate latency)
-- Zoom in for readability
-- Narrate with clear English (use provided script)
-
----
-
-## 🚀 Deployment (Vercel + Neon)
-
-### Backend Deployment (Vercel)
-
-1. **Create Vercel Project**
-   ```bash
-   npm i -g vercel
-   cd inventory_backend
-   vercel
-   ```
-
-2. **Configure Environment Variables in Vercel Dashboard**
-   ```
-   DATABASE_URL = postgresql://user:password@ep-xxx.neon.tech/sneaker_drops_db
-   NODE_ENV = production
-   ```
-
-3. **Ensure Express Entry Point**
-   Create `vercel.json` in backend root:
-   ```json
-   {
-     "version": 2,
-     "builds": [
-       {
-         "src": "dist/server.js",
-         "use": "@vercel/node"
-       }
-     ],
-     "routes": [
-       {
-         "src": "/(.*)",
-         "dest": "dist/server.js"
-       }
-     ]
-   }
-   ```
-
-4. **Build Script**
-   Ensure `package.json` has:
-   ```json
-   {
-     "build": "tsc && npm run db:generate"
-   }
-   ```
-
-### Frontend Deployment (Vercel)
-
-1. **Create Vercel Project**
-   ```bash
-   cd inventory_frontend
-   vercel
-   ```
-
-2. **Configure Environment Variable**
-   ```
-   VITE_API_BASE_URL = https://your-backend.vercel.app/api
-   VITE_SOCKET_URL = https://your-backend.vercel.app
-   ```
-
-3. **Build automatically triggers on push to main**
-
-### Database Setup (Neon)
-
-1. **Create Account & Postgres Database**
-   - Go to https://neon.tech
-   - Create free project
-   - Copy connection string
-
-2. **Copy to Both Vercel Projects**
-   - Backend: `DATABASE_URL` env var
-   - Run `npx prisma migrate deploy` on first deploy
-
-3. **Result:** Live URL for video demo 🎉
-
----
-
-## 🔧 Available Scripts
-
-### Backend
-```bash
-npm run dev      # Start dev server with hot reload
-npm run build    # Compile TypeScript to dist/
-npm run start    # Run compiled JS
-npm run seed     # Seed demo data
-npm run db:generate  # Regenerate Prisma client
-```
-
-### Frontend
-```bash
-npm run dev      # Start Vite dev server
-npm run build    # Build for production
-npm run preview  # Preview production build
-npm run lint     # Run ESLint
-```
-
 ---
 
 ## 📝 API Endpoints
@@ -606,80 +449,3 @@ npm run lint     # Run ESLint
 
 ### Purchases
 - `POST /api/purchase` - Complete purchase (JSON: userId, dropId)
-
----
-
-## 🛡️ Security & Best Practices
-
-✅ **Implemented:**
-- Row-level database locking (FOR UPDATE)
-- Unique constraints to prevent duplicates
-- No sensitive data in frontend
-- .env files in .gitignore
-- CORS configured for localhost/production
-- Transaction isolation for race condition safety
-
-⚠️ **For Production:**
-- Add JWT authentication
-- Implement rate limiting (req/min per user)
-- Add IP whitelisting for admin endpoints
-- Enable HTTPS everywhere
-- Use environment-based secrets (Vercel/Neon)
-
----
-
-## 📦 Submission Checklist
-
-- ✅ GitHub repositories created (backend + frontend OR monorepo)
-- ✅ README.md with setup, architecture, deployment instructions
-- ✅ `.env.example` files as templates (no `.env` committed)
-- ✅ Prisma migrations tracked in git
-- ✅ 2-minute Loom video demo (two windows, all features)
-- ✅ Live deployment URL (optional but bonus points)
-- ✅ Concurrency handling documented (row-level locking + unique constraints)
-- ✅ 60-second expiry logic explained (frontend UI + backend validation)
-
----
-
-## 🤝 Support & Troubleshooting
-
-### Port Already in Use
-```bash
-# Backend (5000)
-lsof -i :5000
-kill -9 <PID>
-
-# Frontend (3000)
-lsof -i :3000
-kill -9 <PID>
-```
-
-### Prisma Migration Issues
-```bash
-# Reset local DB (⚠️ loses data)
-npx prisma migrate reset
-
-# View Prisma Studio
-npx prisma studio
-```
-
-### Socket.io Not Connecting
-- Check backend CORS config
-- Verify Socket.io server running on PORT
-- Check browser console for connection errors
-- Ensure frontend VITE_SOCKET_URL matches backend URL
-
-### .env Not Loading
-- Ensure file exists in correct folder
-- Restart dev server after creating .env
-- Check for typos in key names (case-sensitive)
-
----
-
-## 📄 License
-
-MIT
-
----
-
-**Built with ❤️ for high-traffic e-commerce scenarios.**
