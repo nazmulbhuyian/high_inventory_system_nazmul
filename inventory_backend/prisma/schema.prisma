@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ReservationStatus {
+  ACTIVE
+  EXPIRED
+  COMPLETED
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  username     String        @unique
+  reservations Reservation[]
+  purchases    Purchase[]
+}
+
+model Drop {
+  id              Int           @id @default(autoincrement())
+  name            String
+  price           Int
+  total_stock     Int
+  available_stock Int
+  start_time      DateTime
+  created_at      DateTime      @default(now())
+  reservations    Reservation[]
+  purchases       Purchase[]
+}
+
+model Reservation {
+  id         Int               @id @default(autoincrement())
+  user_id    Int
+  drop_id    Int
+  status     ReservationStatus @default(ACTIVE)
+  expires_at DateTime
+  created_at DateTime          @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  drop Drop @relation(fields: [drop_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([drop_id])
+  @@index([status, expires_at])
+}
+
+model Purchase {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  drop_id    Int
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  drop Drop @relation(fields: [drop_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([drop_id])
+  @@index([drop_id, created_at])
+}
