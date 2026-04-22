@@ -92,6 +92,9 @@ cd inventory_backend
 # Run Prisma migrations
 npx prisma migrate dev --name initial_setup
 
+# Run Prisma generation
+npx prisma generate
+
 # Seed initial data (optional)
 npm run seed
 ```
