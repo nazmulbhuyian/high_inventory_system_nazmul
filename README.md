@@ -89,11 +89,14 @@ createdb sneaker_drops_db
 # Navigate to backend
 cd inventory_backend
 
-# Run Prisma migrations
-npx prisma migrate dev --name initial_setup
-
 # Run Prisma generation
 npx prisma generate
+
+# Run Prisma reset
+npx prisma migrate reset
+
+# Run Prisma migrations
+npx prisma migrate dev --name initial_setup
 
 # Seed initial data (optional)
 npm run seed
